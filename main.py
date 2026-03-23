@@ -3,6 +3,8 @@ import pandas as pd
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from pprint import pprint
+from collections import defaultdict
 
 current_date = datetime.date.today()
 event_date = datetime.date(year=1920, month=1, day=1)
@@ -24,7 +26,20 @@ def get_year_phrase(n: int) -> str:
     return f"Уже {n} {word} с вами!"
 
 
-df = pd.read_excel('wine.xlsx')
+df = pd.read_excel('wine2.xlsx')
+df = df.fillna('')
+result = defaultdict(list)
+for _, row in df.iterrows():
+    wine = {
+        'Картинка': row['Картинка'],
+        'Название': row['Название'],
+        'Сорт': row['Сорт'],
+        'Цена': row['Цена']
+    }
+    result[row['Категория']].append(wine)
+
+pprint(result, sort_dicts=False)
+
 wines = df.to_dict(orient='records')
 
 
