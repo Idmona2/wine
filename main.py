@@ -26,7 +26,9 @@ env = Environment(
     autoescape=select_autoescape(['html'])
 )
 template = env.get_template('template.html')
-rendered_page = template.render(years_text=year_phrase)
+rendered_page = template.render(
+    years_text=get_year_phrase(delta_years)
+)
 
 with open('index.html', 'w', encoding="utf8") as file:
     file.write(rendered_page)
