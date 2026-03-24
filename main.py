@@ -1,9 +1,9 @@
 import datetime
 import pandas as pd
 
+from pprint import pprint
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from pprint import pprint
 from collections import defaultdict
 
 current_date = datetime.date.today()
@@ -38,9 +38,30 @@ for _, row in df.iterrows():
     }
     result[row['Категория']].append(wine)
 
+
+category_order = ['Белые вина', 'Красные вина', 'Напитки']
+intermediate_result = defaultdict(list)
+
+for _, row in df.iterrows():
+    category = row['Категория'].strip()  # убираем пробелы на всякий случай
+    if category in category_order:
+        wine = {
+            'Картинка': row['Картинка'],
+            'Название': row['Название'],
+            'Сорт': row['Сорт'],
+            'Цена': row['Цена']
+        }
+        intermediate_result[category].append(wine)
+
+# Формируем финальный словарь с упорядоченными категориями
+result = {category: intermediate_result[category] for category in category_order if category in intermediate_result}
+
+# Проверка результата в консоли
 pprint(result, sort_dicts=False)
 
-wines = df.to_dict(orient='records')
+
+
+wines = result
 
 
 env = Environment(
