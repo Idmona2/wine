@@ -26,37 +26,33 @@ def get_year_phrase(n: int) -> str:
     return f"Уже {n} {word} с вами!"
 
 
-df = pd.read_excel('wine2.xlsx')
+df = pd.read_excel('wine3.xlsx')
 df = df.fillna('')
-result = defaultdict(list)
-for _, row in df.iterrows():
-    wine = {
-        'Картинка': row['Картинка'],
-        'Название': row['Название'],
-        'Сорт': row['Сорт'],
-        'Цена': row['Цена']
-    }
-    result[row['Категория']].append(wine)
-
 
 category_order = ['Белые вина', 'Красные вина', 'Напитки']
 intermediate_result = defaultdict(list)
 
+min_prices = {
+    category: df[df['Категория'] == category]['Цена'].min()
+    for category in category_order
+}
+
 for _, row in df.iterrows():
     category = row['Категория'].strip()  # убираем пробелы на всякий случай
     if category in category_order:
+        is_profitable = row['Цена'] == min_prices[category]
         wine = {
             'Картинка': row['Картинка'],
             'Название': row['Название'],
             'Сорт': row['Сорт'],
-            'Цена': row['Цена']
+            'Цена': row['Цена'],
+            'Выгодно': is_profitable
         }
         intermediate_result[category].append(wine)
 
-# Формируем финальный словарь с упорядоченными категориями
+
 result = {category: intermediate_result[category] for category in category_order if category in intermediate_result}
 
-# Проверка результата в консоли
 pprint(result, sort_dicts=False)
 
 
